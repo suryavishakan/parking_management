@@ -1,0 +1,176 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Vehicle Details</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+        }
+        .sidebar {
+            width: 200px;
+            background-color: #f4f4f4;
+            float: left;
+            height: 100%;
+            position: fixed;
+            padding-top: 20px;
+        }
+        .header {
+            background-color: #333;
+            color: #fff;
+            text-align: center;
+            padding: 10px 0;
+            margin-bottom: 20px;
+        }
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+            border: 1px solid #ccc;
+            border-radius: 10px;
+            margin-left: 220px; /* Adjusted for sidebar width */
+        }
+        h2 {
+            margin-top: 0;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+        }
+        th, td {
+            padding: 10px;
+            text-align: left;
+            border-bottom: 1px solid #ddd;
+        }
+        th {
+            background-color: #f2f2f2;
+        }
+        .sidebar a {
+            display: block;
+            padding: 10px;
+            text-decoration: none;
+            color: #333;
+            margin-bottom: 5px;
+        }
+        .sidebar a:hover {
+            background-color: #ddd;
+        }
+        .cancel-btn {
+            background-color: #f44336;
+            color: white;
+            padding: 8px 12px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+      
+        .primary-btn{
+         
+            background-color:#3399ff;
+            color: white;
+            padding: 8px 12px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+    </style>
+</head>
+<body>
+<div class="header">
+    <h1>Vehicle Details</h1>
+</div>
+<div class="sidebar">
+    <a href="/slotsHomePage">Home</a>
+    <a href="/slots">Book a slot</a>
+    <a href="/profile">Profile</a>
+    <a href="/bookings">Bookings</a>
+    <a href="/canceledBooking">Canceled Bookings</a>
+    <a href="/vehicle_details">Vehicle Details</a>
+    <a href="/logout">Logout</a>
+</div>
+<div class="container">
+    <h2>User Vehicle Details</h2>
+    
+    <table>
+        <tr>
+            <th>License Plate Number</th>     
+            <th>Owner Name</th>
+            <th>Vehicle Make</th>
+            <th>Action</th>
+        </tr>
+        {% for vehicle in vehicles %}
+        <tr>
+            <td>{{ vehicle.vehicleId }}</td>
+            <td>{{ vehicle.owner_name }}</td>
+            <td>{{ vehicle.vehicle_brand }}</td>
+            <td>
+                <form id="removeVehicleForm{{ loop.index }}" action="/remove_vehicle/{{ vehicle._id }}" method="post">
+                    <button class="cancel-btn" type="button" onclick="removeVehicle('{{ vehicle._id }}', {{ loop.index }})">Remove</button>
+                </form>
+            </td>
+        </tr>
+        {% endfor %}
+    </table>
+    <form id="addVehicleForm" action="/add_vehicle" method="post">
+        <label for="vehicleId">Vehicle ID:</label><br>
+        <input type="text" id="vehicleId" name="vehicleId" required><br>
+        <label for="ownerName">Owner Name:</label><br>
+        <input type="text" id="ownerName" name="ownerName" required><br>
+        <label for="vehicleBrand">Vehicle Make:</label><br>
+        <input type="text" id="vehicleBrand" name="vehicleBrand" required><br><br>
+        <button class="primary-btn" type="submit">Add Vehicle</button>
+    </form>
+</div>
+<script>
+
+        document.addEventListener("DOMContentLoaded", function() {
+            document.getElementById('addVehicleForm').addEventListener('submit', function(event) {
+                event.preventDefault();
+                var form = this;
+                fetch(form.action, {
+                    method: form.method,
+                    headers: {
+                        'Content-Type': 'application/x-www-form-urlencoded'
+                    },
+                    body: new URLSearchParams(new FormData(form))
+                })
+                .then(response => response.json())
+                .then(data => {
+                    alert(data.message);
+                    if (data.success) {
+                        window.location.reload();
+                    }
+                })
+                .catch(error => console.error('Error:', error));
+            });
+        });
+    
+        function removeVehicle(vehicleId, index) {
+            var form = document.getElementById('removeVehicleForm' + index);
+            if (confirm('Are you sure you want to remove this vehicle?')) {
+                fetch(form.action, {
+                    method: form.method,
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({ vehicleId: vehicleId })
+                })
+                .then(response => response.json())
+                .then(data => {
+                    alert(data.message);
+                    if (data.success) {
+                        window.location.reload();
+                    }
+                })
+                .catch(error => console.error('Error:', error));
+            }
+        }
+
+    
+</script>
+</body>
+</html>

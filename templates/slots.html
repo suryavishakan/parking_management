@@ -1,0 +1,491 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Car Park Booking System</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+        }
+        .header {
+            background-color: #333;
+            color: #fff;
+            text-align: center;
+            padding: 10px 0;
+            margin-bottom: 20px;
+        }
+        .sidebar {
+            width: 200px;
+            background-color: #f4f4f4;
+            float: left;
+            height: 100%;
+            position: fixed;
+            padding-top: 20px;
+        }
+        .container {
+            max-width: 800px;
+            margin-left: 220px;
+            padding: 20px;
+            border: 1px solid #ccc;
+            border-radius: 10px;
+        }
+        h1 {
+            text-align: center;
+        }
+        form {
+            background-color: #f4f4f4;
+            padding: 20px;
+            border-radius: 10px;
+        }
+        .form-group {
+            margin-bottom: 20px;
+        }
+        label {
+            font-weight: bold;
+        }
+        input[type="date"],
+        input[type="time"],
+        select,
+        input[type="text"] {
+            width: calc(50% - 10px);
+            padding: 10px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            box-sizing: border-box;
+        }
+        input[type="submit"] {
+            background-color: #007bff;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+        input[type="submit"]:hover {
+            background-color: #0056b3;
+        }
+        .slots {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: space-between;
+            margin-top: 20px;
+        }
+        .slot {
+            width: 120px;
+            height: 120px;
+            border: 1px solid #ccc;
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 10px;
+            cursor: pointer;
+        }
+        .slot:hover {
+            background-color: #f2f2f2;
+        }
+        .slot h3 {
+            margin: 0;
+        }
+        .sidebar a {
+            display: block;
+            padding: 10px;
+            text-decoration: none;
+            color: #333;
+            margin-bottom: 5px;
+        }
+        .sidebar a:hover {
+            background-color: #ddd;
+        }
+        .steps {
+            display: flex;
+            justify-content: space-around;
+            margin-bottom: 20px;
+        }
+        .step {
+            width: 24%;
+            text-align: center;
+            padding: 10px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            background-color: #f4f4f4;
+        }
+        .current-step {
+            background-color: #007bff;
+            color: #fff;
+        }
+        .error {
+            color: red;
+            font-size: 12px;
+        }
+        .occupied {
+            background-color: red;
+            color: white;
+        }
+        .available {
+            background-color: green;
+            color: white;
+        }
+
+        .selected {
+            background-color: #007bff !important;
+            color: white;
+        }
+        .payment {
+            display: none;
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1>Car Park Booking System</h1>
+    </div>
+    <div class="sidebar">
+        <a href="/slotsHomePage">Home</a>
+        <a href="/slots">Book a slot</a>
+        <a href="/profile">Profile</a>
+        <a href="/bookings">Bookings</a>
+        <a href="/canceledBookings">Canceled Bookings</a>
+        <a href="/vehicle_details">Vehicle Details</a>
+        <a href="/logout">Logout</a> <!-- Modified logout link -->
+    </div>
+    <div class="container">
+        <h2>Book a Slot</h2>
+        <div class="steps">
+            <div class="step current-step">Step 1: Date & Zone</div>
+            <div class="step">Step 2: Time Slots</div>
+            <div class="step">Step 3: Parking Slot</div>
+            <div class="step">Step 4: Payment</div>
+        </div>
+        <form id="bookingForm" style="display: block;">
+            <div class="form-group">
+                <label for="bookingDate">Date</label>
+                <input type="date" id="bookingDate" name="bookingDate" required>
+            </div>
+            <div class="form-group">
+                <label for="zone">Zone</label>
+                <select id="zone" name="zone" required>
+                    <option value="">Select Zone</option>
+                    <!--<option value="A">Zone A</option>
+                    <option value="B">Zone B</option>
+                    <option value="C">Zone C</option>-->
+                </select>
+            </div>
+            <input type="button" value="Next" id="step1Next">
+        </form>
+        <form id="timeSlotForm" style="display: none;">
+            <div class="form-group">
+                <label for="bookingStartTime">Start Time</label>
+                <input type="time" id="bookingStartTime" name="bookingStartTime" min="07:00" max="21:00" required>
+            </div>
+            <div class="form-group">
+                <label for="bookingEndTime">End Time</label>
+                <input type="time" id="bookingEndTime" name="bookingEndTime" min="07:00" max="21:00" required>
+            </div>
+            <div class="error" id="timeError"></div>
+            <input type="button" value="Previous" id="step2Prev">
+            <input type="button" value="Next" id="step2Next">
+        </form>
+        <div class="slots" style="display: none;">
+            <h2>Step 3: Parking Slot</h2>
+            <div id="parkingSlots" class="slots">
+                <!-- Parking Slots will be displayed here -->
+            </div>
+            <div class="form-group">
+                <label for="selectedDate">Date</label>
+                <input type="text" id="selectedDate" readonly required>
+            </div>
+            <div class="form-group">
+                <label for="selectedZone">Zone</label>
+                <input type="text" id="selectedZone" readonly required>
+            </div>
+            <div class="form-group">
+                <label for="selectedStartTime">Start Time</label>
+                <input type="text" id="selectedStartTimeDisplay" readonly required>
+            </div>
+            <div class="form-group">
+                <label for="selectedEndTime">End Time</label>
+                <input type="text" id="selectedEndTimeDisplay" readonly required>
+            </div>
+            <!--<div class="form-group">
+                <label for="selectedSlot">Selected Slot</label>
+                <input type="text" id="selectedSlotDisplay" readonly required>
+            </div>-->
+            <button type="button" id="verifySlotButton">Verify Slot</button>
+            <input type="button" value="Previous" id="step3Prev">
+            <input type="button" value="Next" id="step3Next" disabled>
+        </div>
+        <div class="payment" style="display: none;">
+            <h2>Step 4: Payment</h2>
+            <p>Total: <span id="totalAmount"></span></p>
+            <div class="form-group">
+                <label for="cardType">Payment Type</label>
+                <select id="cardType" name="cardType" required>
+                    <option value="">Select Payment Type</option>
+                    <option value="credit">Credit</option>
+                    <option value="debit">Debit</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label for="CardName">Name on the Card</label>
+                <input type="text" id="CardName" name="CardName" placeholder="Name on the card" required>
+            </div>
+            <div class="form-group">
+                <label for="cardNumber">Card Number</label>
+                <input type="text" id="cardNumber" name="cardNumber" placeholder="Card Number" required>
+            </div>
+            <div class="form-group">
+                <label for="expDate">Expiration Date</label>
+                <input type="text" id="expDate" name="expDate" placeholder="MM/YY" required>
+            </div>
+            <div class="form-group">
+                <label for="cvv">CVV</label>
+                <input type="text" id="cvv" name="cvv" placeholder="CVV" required>
+            </div>
+            <input type="button" value="Previous" id="step4Prev">
+            <input type="button" value="Pay" id="payButton">
+        </div>
+    </div>
+    <script>
+        var slots = {};
+        var today = new Date().toISOString().split("T")[0];
+        document.getElementById("bookingDate").setAttribute("min", today);
+        function disableInvalidTimeSlots() {
+            var startTime = document.getElementById("bookingStartTime");
+            var endTime = document.getElementById("bookingEndTime");
+            var minTime = "07:00";
+            var maxTime = "21:00";
+            startTime.removeAttribute("min");
+            endTime.removeAttribute("min");
+            startTime.setAttribute("min", minTime);
+            endTime.setAttribute("min", minTime);
+            startTime.setAttribute("max", maxTime);
+            endTime.setAttribute("max", maxTime);
+        }
+        document.addEventListener("DOMContentLoaded", function () {
+            var zoneDropdown = document.getElementById("zone");
+    
+            // Fetch zones data from backend
+            fetch("/zones")
+                .then(response => response.json())
+                .then(data => {
+                    // Populate zone dropdown with data
+                    data.forEach(zone => {
+                        slots[zone.zoneName] = zone.totalSlots;
+                        var option = document.createElement("option");
+                        option.value = zone.zoneName;
+                        option.text = zone.zoneName; //+ " - Total Slots: " + zone.totalSlots + ", Available Slots: " + zone.availableSlots;
+                        zoneDropdown.appendChild(option);
+                    });
+                })
+                .catch(error => console.error('Error fetching zones:', error));
+        });
+    
+        window.onload = function() {
+            disableInvalidTimeSlots();
+        };
+        document.getElementById("bookingStartTime").addEventListener("change", function() {
+            var startTime = document.getElementById("bookingStartTime").value;
+            var endTime = document.getElementById("bookingEndTime").value;
+            var startTimeHour = parseInt(startTime.split(":")[0]);
+            var endTimeHour = parseInt(endTime.split(":")[0]);
+            if (endTimeHour < startTimeHour) {
+                document.getElementById("bookingEndTime").value = startTime;
+            }
+            disableInvalidTimeSlots();
+        });
+        document.getElementById("bookingEndTime").addEventListener("change", function() {
+            var startTime = document.getElementById("bookingStartTime").value;
+            var endTime = document.getElementById("bookingEndTime").value;
+            var startTimeHour = parseInt(startTime.split(":")[0]);
+            var endTimeHour = parseInt(endTime.split(":")[0]);
+            if (endTimeHour < startTimeHour) {
+                document.getElementById("bookingStartTime").value = endTime;
+            }
+            disableInvalidTimeSlots();
+        });
+        
+        var parkingSlots = document.getElementById("parkingSlots");
+        document.getElementById("step1Next").addEventListener("click", function() {
+            var bookingDate = document.getElementById("bookingDate").value;
+            var zone = document.getElementById("zone").value;
+            if (!bookingDate || !zone) {
+                alert("Please fill in all the fields.");
+                return;
+            }
+            document.getElementById("selectedDate").value = bookingDate;
+            document.getElementById("selectedZone").value = zone;
+            document.getElementById("bookingForm").style.display = "none";
+            document.querySelector(".steps").children[0].classList.remove("current-step");
+            document.querySelector(".steps").children[1].classList.add("current-step");
+            document.getElementById("timeSlotForm").style.display = "block";
+        });
+        document.getElementById("step2Prev").addEventListener("click", function() {
+            document.querySelector(".steps").children[1].classList.remove("current-step");
+            document.querySelector(".steps").children[0].classList.add("current-step");
+            document.getElementById("timeSlotForm").style.display = "none";
+            document.getElementById("bookingForm").style.display = "block";
+        });
+        document.getElementById("step2Next").addEventListener("click", function() {
+            var startTime = document.getElementById("bookingStartTime").value;
+            var endTime = document.getElementById("bookingEndTime").value;
+            var timeError = document.getElementById("timeError");
+            var start = new Date("2022-01-01 " + startTime);
+            var end = new Date("2022-01-01 " + endTime);
+            // Convert time to 12-hour format
+    startTime = start.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', hour12: true });
+    endTime = end.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', hour12: true });
+            if (start >= end) {
+                timeError.textContent = "End time must be greater than start time.";
+                return;
+            }
+            var duration = (end - start) / (1000 * 60);
+            if (duration < 60) {
+                timeError.textContent = "Booking duration must be at least 1 hour.";
+                return;
+            }
+            timeError.textContent = "";
+            document.querySelector(".steps").children[1].classList.remove("current-step");
+            document.querySelector(".steps").children[2].classList.add("current-step");
+            document.getElementById("timeSlotForm").style.display = "none";
+            document.querySelector(".slots").style.display = "block";
+            var bookingDate = document.getElementById("bookingDate").value;
+            var zone = document.getElementById("zone").value;
+            document.getElementById("selectedDate").value = bookingDate;
+            document.getElementById("selectedZone").value = zone;
+            document.getElementById("selectedStartTimeDisplay").value = startTime;
+            document.getElementById("selectedEndTimeDisplay").value = endTime;
+            //verifySlot();
+        });
+        document.getElementById("step3Prev").addEventListener("click", function() {
+            document.querySelector(".steps").children[2].classList.remove("current-step");
+            document.querySelector(".steps").children[1].classList.add("current-step");
+            document.querySelector(".slots").style.display = "none";
+            document.getElementById("timeSlotForm").style.display = "block";
+        });
+        document.getElementById("verifySlotButton").addEventListener("click", function() {
+            verifySlot();/*(function(available) {
+                if (available) {
+                    document.getElementById("step3Next").disabled = false;
+                    alert("Slot is available!");
+                } else {
+                    document.getElementById("step3Next").disabled = true;
+                    alert("Slot is not available. Please select a different slot.");
+                }
+            });*/
+        });
+        function verifySlot()/*(callback)*/ {
+            var bookingDate = document.getElementById("bookingDate").value;
+            var zone = document.getElementById("zone").value;
+            var startTime = document.getElementById("bookingStartTime").value;
+            var endTime = document.getElementById("bookingEndTime").value;
+            //var slotNumber = document.querySelector(".selected").dataset.slot;
+            var bookingData = {
+                bookingDate: bookingDate,
+                zone: zone,
+                bookingStartTime: startTime,
+                bookingEndTime: endTime,
+                //slotNumber: slotNumber
+            };
+            fetch('/verify_slot', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify(bookingData),
+            })
+            .then(response => response.json())
+            .then(data => {
+                //callback(data.available);
+                //alert(`Zone A: ${data.zoneA} slots available\nZone B: ${data.zoneB} slots available\nZone C: ${data.zoneC} slots available`);
+                var totalSlots = data.totalSlots;
+                var bookedSlots = data.bookedSlots;
+                var availableSlots = data.availableSlots;
+                alert(`Total Slots: ${totalSlots}\nBooked Slots: ${bookedSlots}\nAvailable Slots: ${availableSlots}`);
+                if (availableSlots > 0) {
+                    document.getElementById("step3Next").disabled = false;
+                    alert("Slot is available!");
+                } else {
+                    document.getElementById("step3Next").disabled = true;
+                    alert("Slot is not available. Please select a different slot.");
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+            });
+        }
+        document.getElementById("step3Next").addEventListener("click", function() {
+            // verifySlot();
+            document.querySelector(".steps").children[2].classList.remove("current-step");
+            document.querySelector(".steps").children[3].classList.add("current-step");
+            document.querySelector(".slots").style.display = "none";
+            document.querySelector(".payment").style.display = "block";
+            document.getElementById("totalAmount").textContent = calculateTotalAmount();
+        });
+        function calculateTotalAmount() {
+            var startTime = document.getElementById("bookingStartTime").value;
+            var endTime = document.getElementById("bookingEndTime").value;
+            var start = new Date("2022-01-01 " + startTime);
+            var end = new Date("2022-01-01 " + endTime);
+            var durationInMinutes = (end - start) / (1000 * 60);
+            var hours = Math.ceil(durationInMinutes / 60);
+            return "$" + (hours * 10);
+        }
+        document.getElementById("step4Prev").addEventListener("click", function() {
+            document.querySelector(".steps").children[3].classList.remove("current-step");
+            document.querySelector(".steps").children[2].classList.add("current-step");
+            document.querySelector(".payment").style.display = "none";
+            document.querySelector(".slots").style.display = "block";
+        });
+        document.getElementById("payButton").addEventListener("click", function() {
+            var bookingDate = document.getElementById("bookingDate").value;
+            var zone = document.getElementById("zone").value;
+            var startTime = document.getElementById("bookingStartTime").value;
+            var endTime = document.getElementById("bookingEndTime").value;
+            //var slotNumber = document.querySelector(".selected").dataset.slot;
+            var cardType = document.getElementById("cardType").value;
+            var cardName = document.getElementById("CardName").value;
+            var cardNumber = document.getElementById("cardNumber").value;
+            var expDate = document.getElementById("expDate").value;
+            var cvv = document.getElementById("cvv").value;
+            var paymentStatus = "success";
+            if (!cardType || !cardName || !cardNumber || !expDate || !cvv) {
+                alert("Please fill in all the payment details.");
+                return;
+            }
+            var bookingData = {
+                bookingDate: bookingDate,
+                zone: zone,
+                bookingStartTime: startTime,
+                bookingEndTime: endTime,
+                //slotNumber: slotNumber,
+                cardType: cardType,
+                cardName: cardName,
+                cardNumber: cardNumber,
+                expDate: expDate,
+                cvv: cvv,
+                paymentStatus: paymentStatus
+            };
+            fetch('/save_booking', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify(bookingData),
+            })
+            .then(response => response.json())
+            .then(data => {
+                console.log('Success:', data);
+                alert("Booking successful!");
+                window.location.href = "/slots";
+            })
+            .catch(error => {
+                console.error('Error:', error);
+            });
+        });
+    </script>
+</body>
+</html>

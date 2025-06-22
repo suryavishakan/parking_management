@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Parking System</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f4f4f4;
+        }
+        .parking-layout {
+            max-width: 800px;
+            margin: 20px auto;
+            padding: 20px;
+            background-color: #fff;
+            border-radius: 8px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+        .slot {
+            width: 40px;
+            height: 40px;
+            background-color: #00ff00; /* Green by default */
+            border: 1px solid #ccc;
+            display: inline-block;
+            margin: 5px;
+            position: relative;
+        }
+        .slot.booked {
+            background-color: #ff0000; /* Red if booked */
+        }
+        .slot .time {
+            position: absolute;
+            bottom: -20px;
+            right: 0;
+            font-size: 12px;
+            color: #555;
+        }
+        .user-details {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            cursor: pointer;
+        }
+    </style>
+</head>
+<body>
+    <div class="parking-layout">
+        <h2>Parking Layout</h2>
+        <div class="slots">
+            <!-- Generate parking slots dynamically -->
+            <!-- For demonstration purposes, let's assume slots 5, 10, and 15 are booked -->
+            <!-- In real application, this data would come from backend -->
+            {% for slot in range(1, 21) %}
+                <div class="slot {% if slot in [5, 10, 15] %}booked{% endif %}">
+                    Slot {{ slot }}
+                    <div class="time">10:00 AM</div> <!-- Change this with actual time from backend -->
+                </div>
+            {% endfor %}
+        </div>
+    </div>
+
+    <!-- User details modal -->
+    <div id="userDetailsModal" class="modal">
+        <div class="modal-content">
+            <span class="close">&times;</span>
+            <!-- Add user details here -->
+            <div id="userDetails"></div>
+            <!--<h2>User Details</h2>
+            <p>Username: JohnDoe</p>
+            <p>Email: john@example.com</p>-->
+            <!-- Add more user details as needed -->
+        </div>
+    </div>
+
+    <div class="user-details" id="userDetailsBtn">
+        <img src="user_icon.png" alt="User Icon" width="30">
+    </div>
+
+    <script>
+
+        // Function to fetch and display user details
+        function getUserDetails() {
+            fetch('/user-details') // Assuming this route fetches user details from backend
+                .then(response => response.json())
+                .then(data => {
+                    // Construct user details HTML
+                    var userDetailsHTML = `
+                        <h2>User Details</h2>
+                        <p>Username: ${data.username}</p>
+                        <p>Email: ${data.email}</p>
+                        <!-- Add more user details as needed -->
+                    `;
+                    // Display user details in modal
+                    document.getElementById('userDetails').innerHTML = userDetailsHTML;
+                    // Show the modal
+                    modal.style.display = "block";
+                })
+                .catch(error => console.error('Error fetching user details:', error));
+        }
+        // Get the modal
+        var modal = document.getElementById("userDetailsModal");
+
+        // Get the button that opens the modal
+        var btn = document.getElementById("userDetailsBtn");
+
+        // Get the <span> element that closes the modal
+        var span = document.getElementsByClassName("close")[0];
+
+        btn.onclick
+
+        // When the user clicks the button, open the modal
+        btn.onclick = function() {
+            modal.style.display = "block";
+        }
+
+        // When the user clicks on <span> (x), close the modal
+        span.onclick = function() {
+            modal.style.display = "none";
+        }
+
+        // When the user clicks anywhere outside of the modal, close it
+        window.onclick = function(event) {
+            if (event.target == modal) {
+                modal.style.display = "none";
+            }
+        }
+    </script>
+</body>
+</html>

@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Parking System</title>
+    <style>
+        /* CSS styles for parking slots */
+        /* Example styles, customize as needed */
+        .parking-slot {
+            width: 80px;
+            height: 60px;
+            border: 2px solid #000;
+            display: inline-block;
+            margin: 5px;
+            text-align: center;
+            line-height: 60px;
+            cursor: pointer;
+        }
+        .available {
+            background-color: #00ff00; /* Green for available slots */
+        }
+        .booked {
+            background-color: #ff0000; /* Red for booked slots */
+        }
+    </style>
+</head>
+<body>
+    <h1>Parking System</h1>
+    <div id="parkingSlots"></div>
+
+    <script>
+        // Sample parking data (replace with actual data from backend)
+        const parkingData = [
+            { id: 1, status: 'available' },
+            { id: 2, status: 'booked' },
+            // Add more parking slots here
+        ];
+
+        // Function to generate parking slots dynamically
+        function generateParkingSlots() {
+            const parkingSlotsContainer = document.getElementById('parkingSlots');
+            parkingData.forEach(slot => {
+                const slotElement = document.createElement('div');
+                slotElement.classList.add('parking-slot');
+                slotElement.textContent = 'Slot ' + slot.id;
+                if (slot.status === 'available') {
+                    slotElement.classList.add('available');
+                } else if (slot.status === 'booked') {
+                    slotElement.classList.add('booked');
+                    slotElement.disabled = true; // Disable booked slots
+                }
+                // Add click event listener to book slots
+                slotElement.addEventListener('click', () => bookSlot(slot.id));
+                parkingSlotsContainer.appendChild(slotElement);
+            });
+        }
+
+        // Function to simulate booking a parking slot
+        function bookSlot(slotId) {
+            const slotElement = document.querySelector('.parking-slot:nth-child(' + slotId + ')');
+            if (slotElement.classList.contains('available')) {
+                // Simulate booking by changing status and color
+                slotElement.classList.remove('available');
+                slotElement.classList.add('booked');
+                slotElement.disabled = true;
+                // Perform booking action (e.g., send request to backend)
+                // Add your booking logic here
+            } else {
+                alert('This slot is already booked.');
+            }
+        }
+
+        // Generate parking slots on page load
+        window.onload = generateParkingSlots;
+    </script>
+</body>
+</html>

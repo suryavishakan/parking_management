@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Welcome</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            /*background-image: url('static/car_parking_image.jpg');  Add your background image URL here */
+            background-size: cover;
+            background-repeat: no-repeat;
+            background-attachment: fixed;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+        }
+        .header {
+            background-color: #333;
+            color: #fff;
+            text-align: center;
+            padding: 10px 0;
+            margin-bottom: 20px;
+        }
+        .sidebar {
+            width: 200px;
+            background-color: #f4f4f4;
+            float: left;
+            height: 100%;
+            position: fixed;
+            padding-top: 20px;
+        }
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+            border: 1px solid #ccc;
+            border-radius: 10px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            flex-direction: column;
+        }
+        h2 {
+            margin-top: 0;
+        }
+        .sidebar a {
+            display: block;
+            padding: 10px;
+            text-decoration: none;
+            color: #333;
+            margin-bottom: 5px;
+        }
+        .sidebar a:hover {
+            background-color: #ddd;
+        }
+        .welcome-text {
+            color: white;
+            font-size: 24px;
+            margin-bottom: 20px;
+        }
+        .button {
+            background-color: #007bff;
+            color: white;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            text-decoration: none;
+            transition: background-color 0.3s;
+        }
+        .button:hover {
+            background-color: #0056b3;
+        }
+        .booking-details {
+            background-color: #fff;
+            padding: 10px;
+            margin-top: 10px;
+            border-radius: 5px;
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1>Car Park Booking System</h1>
+    </div>
+    <div class="sidebar">
+        <a href="/slotsHomePage">Home</a>
+        <a href="/slots">Book a slot</a>
+        <a href="/profile">Profile</a>
+        <a href="/bookings">Bookings</a>
+        <a href="/canceledBooking">Canceled Bookings</a> <!-- Corrected link -->
+        <a href="/vehicle_details">Vehicle Details</a>
+        <a href="/logout">Logout</a> <!-- Modified logout link -->
+    </div>
+
+    <div class="container">
+        <h2>Canceled Bookings</h2>
+        <div id="canceledBookings">
+            {% if user_canceled_booking %}
+                <table>
+                    <thead>
+                        <tr>
+                            <th>UserName</th>
+                            <!--<th>Booking ID</th>-->
+                            <th>Zone</th>
+                            <!-- <th>Slot Number</th>
+                            <th>Payment Status</th> -->
+                            <th>Booking Date</th>
+                            <th>Start Time</th>
+                            <th>End Time</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for booking in user_canceled_booking %}
+                            <tr>
+                                <td>{{ booking.username}}</td>
+                                <!--<td>{{ booking._id }}</td>-->
+                                <td>{{ booking.zone }}</td>
+                                <!-- <td>{{ booking.slotNumber }}</td> -->
+                                <td>{{ booking.bookingDate }}</td>
+                                <td>{{ booking.bookingStartTime }}</td>
+                                <td>{{ booking.bookingEndTime }}</td>
+                                
+                            </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            {% else %}
+                <p>No bookings found</p>
+            {% endif %}
+        </div>
+    </div>
+
+</body>
+</html>

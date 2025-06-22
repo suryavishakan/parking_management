@@ -1,0 +1,156 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Slots</title>
+    <style>
+        /* General styles */
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+        }
+        .container {
+            display: flex;
+            margin-top: 50px; /* Add margin to leave space for the side header */
+        }
+
+        /* Side header styles */
+        .side-header {
+            width: 200px;
+            height: 100vh; /* Full height */
+            background-color: #333;
+            color: #fff;
+            padding-top: 50px;
+            position: fixed;
+            left: 0;
+            top: 0;
+            overflow-y: auto; /* Enable scrolling if content overflows */
+        }
+        .side-header a {
+            display: block;
+            padding: 15px 20px;
+            color: #fff;
+            text-decoration: none;
+            transition: background-color 0.3s ease;
+        }
+        .side-header a:hover {
+            background-color: #555;
+        }
+
+        /* Content styles */
+        .content {
+            margin-left: 200px; /* Same as side header width */
+            padding: 20px;
+        }
+        .welcome-msg {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+
+        /* Table styles */
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+        }
+        th, td {
+            padding: 10px;
+            border-bottom: 1px solid #ddd;
+            text-align: left;
+        }
+        th {
+            background-color: #333;
+            color: #fff;
+        }
+        tr:hover {
+            background-color: #f5f5f5;
+        }
+
+        /* Responsive styles */
+        @media screen and (max-width: 768px) {
+            .container {
+                flex-direction: column;
+            }
+            .content {
+                margin-left: 0;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- Side header -->
+        <div class="side-header">
+            <a href="/admin_homePage">Home</a>
+            <a href="/allCustomers">Customers</a>
+            <a href="/allVehicles">Vehicles</a>
+            <a href="/allSlots">Slots</a>
+            <a href="/addZone">Add Zone</a>
+            <a href="/allBookings">Bookings</a>
+            <a href="/allCanceledBookings">Canceled Bookings</a>
+            <a href="/logout">Logout</a>
+        </div>
+
+        <!-- Main content -->
+        <div class="content">
+            <h2>Select a zone:</h2>
+            <form action="/allSlots" method="POST">
+                <label for="zone">Choose a zone:</label>
+                <select name="zone" id="zone">
+                    <!--<option value="A">Zone A</option>
+                    <option value="B">Zone B</option>
+                    <option value="C">Zone C</option>-->
+                </select>
+                <button type="submit">Submit</button>
+            </form>
+
+            {% if zone %}
+                <h2>Slots in Zone {{ zone }}</h2>
+                <table>
+                    <thead>
+                        <tr>
+                            <!-- <th>Slot Number</th> -->
+                            <th>Username</th>
+                            <th>Booking Date</th>
+                            <th>Booking Start Time</th>
+                            <th>Booking End Time</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for slot in slots %}
+                            <tr>
+                                <!-- <td>{{ slot.slotNumber }}</td> -->
+                                <td>{{ slot.username }}</td>
+                                <td>{{ slot.bookingDate }}</td>
+                                <td>{{ slot.bookingStartTime }}</td>
+                                <td>{{ slot.bookingEndTime }}</td>
+                            </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            {% endif %}
+        </div>
+    </div>
+    <script>
+        document.addEventListener("DOMContentLoaded", function () {
+            var zoneDropdown = document.getElementById("zone");
+    
+            // Fetch zones data from backend
+            fetch("/zones")
+                .then(response => response.json())
+                .then(data => {
+                    // Populate zone dropdown with data
+                    data.forEach(zone => {
+                        var option = document.createElement("option");
+                        option.value = zone.zoneName;
+                        option.text = zone.zoneName //+ " - Total Slots: " + zone.totalSlots + ", Available Slots: " + zone.availableSlots;
+                        zoneDropdown.appendChild(option);
+                    });
+                })
+                .catch(error => console.error('Error fetching zones:', error));
+        });
+    </script>
+</body>
+</html>

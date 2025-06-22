@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Add Zone</title>
+    <style>
+        /* General styles */
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+        }
+        .container {
+            display: flex;
+            align-items: flex-start;
+        }
+        h1 {
+            text-align: center;
+        }
+        form {
+            max-width: 500px;
+            margin: auto;
+            background: #f4f4f4;
+            padding: 20px;
+            border-radius: 5px;
+        }
+        .form-group {
+            margin-bottom: 20px;
+        }
+        label {
+            font-weight: bold;
+        }
+        input[type="text"],
+        input[type="number"] {
+            width: calc(100% - 10px);
+            padding: 10px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            box-sizing: border-box;
+        }
+        input[type="submit"] {
+            background-color: #007bff;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+        input[type="submit"]:hover {
+            background-color: #0056b3;
+        }
+        .side-header {
+            width: 200px;
+            height: 100vh; /* Full height */
+            background-color: #333;
+            color: #fff;
+            padding-top: 50px;
+            left: 0;
+            top: 0;
+            overflow-y: auto; /* Enable scrolling if content overflows */
+        }
+        .side-header a {
+            display: block;
+            padding: 15px 20px;
+            color: #fff;
+            text-decoration: none;
+            transition: background-color 0.3s ease;
+        }
+        .side-header a:hover {
+            background-color: #555;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- Side header -->
+        <div class="side-header">
+            <a href="/admin_homePage">Home</a>
+            <a href="/allCustomers">Customers</a>
+            <a href="/allVehicles">Vehicles</a>
+            <a href="/allSlots">Slots</a>
+            <a href="/addZone">Add Zone</a>
+            <a href="/allBookings">Bookings</a>
+            <a href="/allCanceledBookings">Canceled Bookings</a>
+            <a href="/logout">Logout</a>
+        </div>
+        <h1>Add Zone</h1>
+        <form id="addZoneForm" method="POST"> <!-- Ensure method is set to POST -->
+            <div class="form-group">
+                <label for="zoneName">Zone Name</label>
+                <input type="text" id="zoneName" name="zoneName" required>
+            </div>
+            <div class="form-group">
+                <label for="totalSlot">Total Slots</label>
+                <input type="number" id="totalSlot" name="totalSlot" min="1" required>
+            </div>
+            <input type="submit" value="Add Zone">
+        </form>
+    </div>
+
+    <script>
+        document.getElementById("addZoneForm").addEventListener("submit", function(event) {
+            event.preventDefault(); // Prevent the default form submission
+
+            // Get form data
+            var zoneName = document.getElementById("zoneName").value;
+            var totalSlot = document.getElementById("totalSlot").value;
+
+            // Create an object with the form data
+            var formData = {
+                zoneName: zoneName,
+                totalSlot: totalSlot
+            };
+console.log(formData)
+            // Send the form data to the backend using fetch
+            fetch('/addZone', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(formData)
+            })
+            .then(response => response.json())
+            .then(data => {
+                // Handle the response from the server
+                console.log(data);
+                alert("Zone added successfully!");
+                // You can redirect to another page if needed
+                window.location.href = "/admin_homePage";
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                alert("An error occurred. Please try again.");
+            });
+        });
+    </script>
+</body>
+</html>

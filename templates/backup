@@ -1,0 +1,333 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Parking System</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f4f4f4;
+        }
+        .parking-layout {
+            max-width: 800px;
+            margin: 20px auto;
+            padding: 20px;
+            background-color: #fff;
+            border-radius: 8px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+        .slot {
+            width: 40px;
+            height: 40px;
+            background-color: #00ff00; /* Green by default */
+            border: 1px solid #ccc;
+            display: inline-block;
+            margin: 5px;
+            position: relative;
+        }
+        .slot.booked {
+            background-color: #ff0000; /* Red if booked */
+        }
+        .slot .time {
+            position: absolute;
+            bottom: -20px;
+            right: 0;
+            font-size: 12px;
+            color: #555;
+        }
+        .user-details {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            cursor: pointer;
+        }
+    </style>
+</head>
+<body>
+    <div class="parking-layout">
+        <h2>Parking Layout</h2>
+        <!-- Dropdown to select zone -->
+        <div>
+            <label for="zoneSelect">Select Zone:</label>
+            <select id="zoneSelect">
+                <option value="A">Zone A</option>
+                <option value="B">Zone B</option>
+                <option value="C">Zone C</option>
+            </select>
+        </div>
+        <!-- Buttons to select start and end times -->
+        <div>
+            <label for="startTime">Start Time:</label>
+            <input type="time" id="startTime">
+            <label for="endTime">End Time:</label>
+            <input type="time" id="endTime">
+        </div>
+        <div class="slots">
+            <!-- Generate parking slots dynamically -->
+            <!-- For demonstration purposes, let's assume slots 5, 10, and 15 are booked -->
+            <!-- In real application, this data would come from backend -->
+            {% for slot in range(1, 21) %}
+                <div class="slot {% if slot in [5, 10, 15] %}booked{% endif %}">
+                    Slot {{ slot }}
+                </div>
+            {% endfor %}
+        </div>
+    </div>
+
+    <!-- User details modal -->
+    <div id="userDetailsModal" class="modal">
+        <div class="modal-content">
+            <span class="close">&times;</span>
+            <!-- Add user details here -->
+            <div id="userDetails"></div>
+        </div>
+    </div>
+
+    <div class="user-details" id="userDetailsBtn">
+        <img src="user_icon.png" alt="User Icon" width="30">
+    </div>
+
+    <script>
+        // Function to fetch and display user details
+        function getUserDetails() {
+            fetch('/user-details') // Assuming this route fetches user details from backend
+                .then(response => response.json())
+                .then(data => {
+                    // Construct user details HTML
+                    var userDetailsHTML = `
+                        <h2>User Details</h2>
+                        <p>Username: ${data.username}</p>
+                        <p>Email: ${data.email}</p>
+                    `;
+                    // Display user details in modal
+                    document.getElementById('userDetails').innerHTML = userDetailsHTML;
+                    // Show the modal
+                    modal.style.display = "block";
+                })
+                .catch(error => console.error('Error fetching user details:', error));
+        }
+
+        // Get the modal
+        var modal = document.getElementById("userDetailsModal");
+
+        // Get the button that opens the modal
+        var btn = document.getElementById("userDetailsBtn");
+
+        // Get the <span> element that closes the modal
+        var span = document.getElementsByClassName("close")[0];
+
+        // Event listener for user button
+        btn.addEventListener('click', getUserDetails);
+
+        // When the user clicks on <span> (x), close the modal
+        span.onclick = function() {
+            modal.style.display = "none";
+        }
+
+        // When the user clicks anywhere outside of the modal, close it
+        window.onclick = function(event) {
+            if (event.target == modal) {
+                modal.style.display = "none";
+            }
+        }
+    </script>
+</body>
+</html>
+
+
+
+
+
+
+
+
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>User Profile</title>
+</head>
+<body>
+    <h1>User Profile</h1>
+    <p><strong>Name:</strong> <span id="userName"></span></p>
+    <p><strong>Username:</strong> <span id="userEmail"></span></p>
+    <p><strong>Mobile Number:</strong> <span id="userPhone"></span></p>
+    <p><strong>Password:</strong> <span id="userPassword"></span></p>
+    <p><strong>Gender:</strong> <span id="userGender"></span></p>
+    <p><strong>Age:</strong> <span id="userAge"></span></p>
+    <p><strong>Member Type:</strong> <span id="userMemberType"></span></p>
+    <p><strong>License ID:</strong> <span id="userLicenseId"></span></p>
+    <p><strong>Vehicle ID:</strong> <span id="userVehicleId"></span></p>
+
+    <script>
+        function fetchUserProfile() {
+            var xhr = new XMLHttpRequest();
+            xhr.onreadystatechange = function() {
+                if (this.readyState == 4 && this.status == 200) {
+                    var user = JSON.parse(this.responseText);
+                    document.getElementById("userName").innerText = user.name;
+                    document.getElementById("userEmail").innerText = user.username;
+                    document.getElementById("userPhone").innerText = user.mobileNumber;
+                    document.getElementById("userPassword").innerText = user.password;
+                    document.getElementById("userGender").innerText = user.gender;
+                    document.getElementById("userAge").innerText = user.age;
+                    document.getElementById("userMemberType").innerText = user.memberType;
+                    document.getElementById("userLicenseId").innerText = user.licenseId;
+                    document.getElementById("userVehicleId").innerText = user.vehicleId;
+                }
+            };
+            xhr.open("GET", "/fetch_user_profile", true);
+            xhr.send();
+        }
+    </script>
+</body>
+</html>
+-----------------------------------------------------------
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Car Park Booking System</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+        }
+        .header {
+            background-color: #333;
+            color: #fff;
+            text-align: center;
+            padding: 10px 0;
+            margin-bottom: 20px;
+        }
+        .sidebar {
+            width: 200px;
+            background-color: #f4f4f4;
+            float: left;
+            height: 100%;
+            position: fixed;
+            padding-top: 20px;
+        }
+        .container {
+            max-width: 800px;
+            margin-left: 220px;
+            padding: 20px;
+            border: 1px solid #ccc;
+            border-radius: 10px;
+        }
+        h1 {
+            text-align: center;
+        }
+        form {
+            background-color: #f4f4f4;
+            padding: 20px;
+            border-radius: 10px;
+        }
+        .form-group {
+            margin-bottom: 20px;
+        }
+        label {
+            font-weight: bold;
+        }
+        input[type="datetime-local"] {
+            width: calc(50% - 10px);
+            padding: 10px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            box-sizing: border-box;
+        }
+        select {
+            width: calc(50% - 10px);
+            padding: 10px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            box-sizing: border-box;
+        }
+        input[type="submit"] {
+            background-color: #007bff;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+        input[type="submit"]:hover {
+            background-color: #0056b3;
+        }
+        .sidebar a {
+            display: block;
+            padding: 10px;
+            text-decoration: none;
+            color: #333;
+            margin-bottom: 5px;
+        }
+        .sidebar a:hover {
+            background-color: #ddd;
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1>Car Park Booking System</h1>
+    </div>
+    <div class="sidebar">
+        <a href="#" onclick="fetchUserProfile()">Profile</a>
+        <a href="#">Bookings</a>
+        <a href="#">Vehicle Details</a>
+        <a href="#">Logout</a>
+    </div>
+    <div class="container">
+        <h2>Book a Slot</h2>
+        <form id="bookingForm">
+            <div class="form-group">
+                <label for="startDate">Start Date and Time</label>
+                <input type="datetime-local" id="startDate" name="startDate" required>
+            </div>
+            <div class="form-group">
+                <label for="endDate">End Date and Time</label>
+                <input type="datetime-local" id="endDate" name="endDate" required>
+            </div>
+            <div class="form-group">
+                <label for="zone">Zone</label>
+                <select id="zone" name="zone" required>
+                    <option value="A">Zone A</option>
+                    <option value="B">Zone B</option>
+                    <option value="C">Zone C</option>
+                </select>
+            </div>
+            <input type="submit" value="Book Now">
+        </form>
+        <div id="profileDetails" style="display:none;">
+            <h2>User Profile</h2>
+            <p><strong>Name:</strong> <span id="userName"></span></p>
+            <p><strong>Email:</strong> <span id="userEmail"></span></p>
+            <p><strong>Phone:</strong> <span id="userPhone"></span></p>
+        </div>
+    </div>
+
+    <script>
+        function fetchUserProfile() {
+            var xhr = new XMLHttpRequest();
+            xhr.onreadystatechange = function() {
+                if (this.readyState == 4 && this.status == 200) {
+                    var user = JSON.parse(this.responseText);
+                    document.getElementById("userName").innerText = user.name;
+                    document.getElementById("userEmail").innerText = user.email;
+                    document.getElementById("userPhone").innerText = user.phone;
+                    document.getElementById("profileDetails").style.display = "block";
+                }
+            };
+            xhr.open("GET", "/fetch_user_profile", true);
+            xhr.send();
+        }
+    </script>
+</body>
+</html>
+

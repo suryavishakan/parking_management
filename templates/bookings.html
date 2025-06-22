@@ -1,0 +1,317 @@
+booking
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Car Park Booking System - Bookings</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+        }
+        .header {
+            background-color: #333;
+            color: #fff;
+            text-align: center;
+            padding: 10px 0;
+            margin-bottom: 20px;
+        }
+        .sidebar {
+            width: 200px;
+            background-color: #f4f4f4;
+            float: left;
+            height: 100%;
+            position: fixed;
+            padding-top: 20px;
+        }
+        .container {
+            max-width: 1150px;
+            margin-left: 220px;
+            padding: 20px;
+            border: 1px solid #ccc;
+            border-radius: 10px;
+        }
+        h2 {
+            margin-top: 0;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+        }
+        th, td {
+            padding: 10px;
+            text-align: left;
+            border-bottom: 1px solid #ddd;
+        }
+        th {
+            background-color: #f2f2f2;
+        }
+        .sidebar a {
+            display: block;
+            padding: 10px;
+            text-decoration: none;
+            color: #333;
+            margin-bottom: 5px;
+        }
+        .sidebar a:hover {
+            background-color: #ddd;
+        }
+        .cancel-btn {
+            background-color: #f44336;
+            color: white;
+            padding: 8px 12px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+        .cancel-btn:hover {
+            background-color: #d32f2f;
+        }
+        .check-in {
+            background-color: #42bd3c;
+            color: white;
+            padding: 8px 12px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+        .check-in:hover {
+            background-color: #13d116;
+        }
+        .modal {
+            display: none; 
+            position: fixed; 
+            z-index: 1; 
+            left: 0;
+            top: 0;
+            width: 100%; 
+            height: 100%; 
+            overflow: auto; 
+            background-color: rgb(0,0,0); 
+            background-color: rgba(0,0,0,0.4); 
+            padding-top: 60px;
+        }
+        .modal-content {
+            background-color: #fefefe;
+            margin: 5% auto;
+            padding: 20px;
+            border: 1px solid #888;
+            width: 80%;
+        }
+        .close {
+            color: #aaa;
+            float: right;
+            font-size: 28px;
+            font-weight: bold;
+        }
+        .close:hover,
+        .close:focus {
+            color: black;
+            text-decoration: none;
+            cursor: pointer;
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1>Car Park Booking System - Bookings</h1>
+    </div>
+    <div class="sidebar">
+        <a href="/slotsHomePage">Home</a>
+        <a href="/slots">Book a slot</a>
+        <a href="/profile">Profile</a>
+        <a href="/bookings">Bookings</a>
+        <a href="/canceledBooking">Canceled Bookings</a>
+        <a href="/vehicle_details">Vehicle Details</a>
+        <a href="/logout">Logout</a>
+    </div>
+    <div class="container">
+        <h2>Previous Bookings</h2>
+        <div id="bookings">
+            {% if bookings %}
+                <table>
+                    <thead>
+                        <tr>
+                            <th>UserName</th>
+                            <th>Booking ID</th>
+                            <th>Zone</th>
+                            <th>Payment Status</th>
+                            <th>Booking Date</th>
+                            <th>Start Time</th>
+                            <th>End Time</th>
+                            <th>Action</th>
+                            <th>Check in</th>
+                            <th>Timmer</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for booking in bookings %}
+                            <tr>
+                                <td>{{ booking.username}}</td>
+                                <td>{{ booking._id }}</td>
+                                <td>{{ booking.zone }}</td> 
+                                <td>{{ booking.paymentStatus }}</td>
+                                <td>{{ booking.bookingDate }}</td>
+                                <td>{{ booking.bookingStartTime }}</td>
+                                <td>{{ booking.bookingEndTime }}</td>
+                                <td><button class="cancel-btn" onclick="cancelBooking('{{ booking._id }}')">Cancel</button></td>
+                                <td><button class="check-in" onclick="checkIn('{{ booking._id }}', '{{ booking.bookingDate }}', '{{ booking.bookingStartTime }}', '{{ booking.bookingEndTime }}')">Check In</button></td>
+                                <td id="timer_{{ booking._id }}">0h 0m 0s</td>
+                            </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            {% else %}
+                <p>No bookings found</p>
+            {% endif %}
+        </div>
+    </div>
+
+    <!-- Modal -->
+    <div id="myModal" class="modal">
+        <div class="modal-content">
+            <span class="close">&times;</span>
+            <p id="modal-message"></p>
+        </div>
+    </div>
+
+    <script>    
+
+function subtractTime(time1, time2) {
+    // Split the time strings into hours and minutes
+    var [hours1, minutes1] = time1.split(":").map(Number);
+    var [hours2, minutes2] = time2.split(":").map(Number);
+
+    // Convert both times to total minutes
+    var totalMinutes1 = hours1 * 60 + minutes1;
+    var totalMinutes2 = hours2 * 60 + minutes2;
+
+    // Subtract the total minutes
+    var differenceInMinutes = totalMinutes1 - totalMinutes2;
+
+    // Handle negative difference
+    if (differenceInMinutes < 0) {
+        // Add 24 hours (1440 minutes) to the difference
+        differenceInMinutes += 24 * 60; // 24 hours * 60 minutes
+    }
+
+    // Convert the difference back to hours and minutes
+    var hours = Math.floor(differenceInMinutes / 60);
+    var minutes = differenceInMinutes % 60;
+
+    // Format the result as "hh:mm"
+    var result = `${String(hours).padStart(2, "0")}:${String(minutes).padStart(2, "0")}`;
+    return result;
+}
+    function startTimer(bookingId, bookingStartTime, bookingEndTime,formattedCurrentTime) {
+    
+    var difference = subtractTime(bookingEndTime, formattedCurrentTime) ;
+
+    if (formattedCurrentTime > bookingEndTime) {
+        difference = 0;
+    }
+    var timeParts = difference.split(':');
+
+// Convert string parts to integers and set seconds
+var hours = parseInt(timeParts[0], 10);
+var minutes = parseInt(timeParts[1], 10);
+var seconds = 59;
+var difference = (hours * 60 * 60 + minutes * 60 + seconds) * 1000;
+
+// Start the countdown timer
+var interval = setInterval(function() {
+    // Calculate hours, minutes, and seconds from the current difference
+    var hours = Math.floor((difference % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+    var minutes = Math.floor((difference % (1000 * 60 * 60)) / (1000 * 60));
+    var seconds = Math.floor((difference % (1000 * 60)) / 1000);
+
+    // Display the timer
+    document.getElementById("timer_" + bookingId).innerHTML = `${hours}h ${minutes}m ${seconds}s`;
+
+    // Decrease the difference by 1 second
+    difference -= 1000;
+
+    
+    if (difference < 0) {
+        clearInterval(interval);
+        document.getElementById("timer_" + bookingId).innerHTML = "Booking Ended";
+    }
+}, 1000); 
+}
+
+function getCurrentTimeFormatted() {
+    var currentTime = new Date();
+    var hours = String(currentTime.getHours()).padStart(2, '0');
+    var minutes = String(currentTime.getMinutes()).padStart(2, '0');
+    var seconds = String(currentTime.getSeconds()).padStart(2, '0');
+    return hours + ":" + minutes ;
+}
+
+function getCurrentDateFormatted() {
+    var currentDate = new Date();
+    var year = currentDate.getFullYear();
+    var month = String(currentDate.getMonth() + 1).padStart(2, '0'); // Months are zero-based
+    var day = String(currentDate.getDate()).padStart(2, '0');
+    return year + "-" + month + "-" + day;
+}
+
+function checkIn(bookingId, bookingDate, bookingStartTime, bookingEndTime) {
+    var formattedCurrentDate = getCurrentDateFormatted();
+    var formattedCurrentTime = getCurrentTimeFormatted();
+    console.log("Current Date:", formattedCurrentDate); // Logging the current date in the same format as the booking date
+    console.log("Current Time:", formattedCurrentTime); // Logging the current time in the same format as the booking time
+
+    // Convert date and time strings to Date objects
+
+
+    // Start timer only if current time is within the booking period and on the same date
+    if (formattedCurrentTime >= bookingStartTime && formattedCurrentTime < bookingEndTime && formattedCurrentDate === bookingDate) {
+        startTimer(bookingId, bookingStartTime, bookingEndTime,formattedCurrentTime);
+    } else {
+        alert("You cannot check in now. Please check in at the proper time.");
+    }
+}
+
+
+        function cancelBooking(bookingId) {
+            if (confirm("Are you sure you want to cancel this booking?")) {
+                // Send an AJAX request to cancel the booking and remove it from the database
+                var xhr = new XMLHttpRequest();
+                xhr.open("POST", "/cancel_booking", true);
+                xhr.setRequestHeader("Content-Type", "application/json");
+                xhr.onreadystatechange = function() {
+                    if (xhr.readyState === 4) {
+                        if (xhr.status === 200) {
+                            // Reload the page after successful cancellation
+                            window.location.reload();
+                        } else {
+                            // Display error message in modal
+                            var modal = document.getElementById("myModal");
+                            var modalMessage = document.getElementById("modal-message");
+                            modalMessage.innerHTML = xhr.responseText;
+                            modal.style.display = "block";
+
+                            // Close the modal when the user clicks on the close button
+                            var closeBtn = document.getElementsByClassName("close")[0];
+                            closeBtn.onclick = function() {
+                                modal.style.display = "none";
+                            }
+
+                            // Close the modal when the user clicks anywhere outside of the modal
+                            window.onclick = function(event) {
+                                if (event.target == modal) {
+                                    modal.style.display = "none";
+                                }
+                            }
+                        }
+                    }
+                };
+                xhr.send(JSON.stringify({ bookingId: bookingId }));
+            }
+        }
+    </script>
+</body>
+</html>

@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Canceled Bookings</title>
+    <style>
+        /* General styles */
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+        }
+
+        /* Table styles */
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+        }
+        th, td {
+            padding: 10px;
+            text-align: left;
+            border-bottom: 1px solid #ddd;
+        }
+        th {
+            background-color: #f2f2f2;
+        }
+        
+        /* Side header styles */
+        .container {
+            display: flex;
+        }
+
+        .side-header {
+            width: 200px;
+            background-color: #333;
+            color: #fff;
+            padding-top: 50px;
+            position: fixed;
+            left: 0;
+            top: 0;
+            height: 100%;
+            overflow-y: auto;
+        }
+        .side-header a {
+            display: block;
+            padding: 15px 20px;
+            color: #fff;
+            text-decoration: none;
+            transition: background-color 0.3s ease;
+        }
+        .side-header a:hover {
+            background-color: #555;
+        }
+
+        /* Content styles */
+        .content {
+            margin-left: 200px; /* Same as side header width */
+            padding: 20px;
+        }
+        .welcome-msg {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+
+        /* Responsive styles */
+        @media screen and (max-width: 768px) {
+            .container {
+                flex-direction: column;
+            }
+            .content {
+                margin-left: 0;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- Side header -->
+        <div class="side-header">
+            <a href="/admin_homePage">Home</a>
+            <a href="/allCustomers">Customers</a>
+            <a href="/allVehicles">Vehicles</a>
+            <a href="/allSlots">Slots</a>
+            <a href="/addZone">Add Zone</a>
+            <a href="/allBookings">Bookings</a>
+            <a href="/allCanceledBookings">Canceled Bookings</a>
+            <a href="/logout">Logout</a>
+        </div>
+
+        <!-- Main content -->
+        <div class="content">
+            <h1>Canceled Bookings</h1>
+            <table>
+                <thead>
+                    <tr>
+                        <th>UserName</th>
+                        <!--<th>Booking ID</th>-->
+                        <th>Zone</th>
+                        <!-- <th>Slot Number</th> -->
+                        <!--<th>Payment Status</th>
+                        <th>Start Time</th>
+                        <th>End Time</th>-->
+                        <th>Booking Date</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for booking in all_canceled_bookings %}
+                        <tr>
+                            <td>{{ booking.username }}</td>
+                            <!--<td>{{ booking._id }}</td>-->
+                            <td>{{ booking.zone }}</td>
+                            <!-- <td>{{ booking.slotNumber }}</td> -->
+                            <!--<td>{{ booking.paymentStatus }}</td>-->
+                            <td>{{ booking.bookingDate }}</td>
+                            <!--<td>{{ booking.bookingStartTime }}</td>
+                            <td>{{ booking.bookingEndTime }}</td>-->
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</body>
+</html>

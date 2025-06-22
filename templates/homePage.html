@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Welcome to Parking System</title>
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            font-family: Arial, sans-serif;
+            background-image: url('static/car_parking_image.jpg');
+            background-size: cover;
+            background-position: center;
+            background-attachment: fixed;
+            height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            color: white;
+        }
+        .container {
+            text-align: center;
+        }
+        h1 {
+            font-size: 2.5rem;
+            margin-bottom: 20px;
+        }
+        .btn {
+            padding: 10px 20px;
+            font-size: 1.2rem;
+            text-transform: uppercase;
+            border: none;
+            cursor: pointer;
+            margin: 5px;
+        }
+        .btn-signup {
+            background-color: #4CAF50;
+            color: white;
+        }
+        .btn-login {
+            background-color: #008CBA;
+            color: white;
+        }
+        .btn:hover {
+            opacity: 0.8;
+        }
+        .qr-code {
+            position: absolute;
+            bottom: 40px;
+            right: 200px;
+        }
+        .qr-code img {
+            width: 165px;
+            height: 155px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Welcome to Parking Management System</h1>
+
+        <div>
+            <a href="{{ url_for('signup') }}" class="btn btn-signup">Sign Up</a>
+            <a href="{{ url_for('login') }}" class="btn btn-login">Login</a>
+        </div>
+        <div class="qr-code">
+            <img src="static/image.png" alt="QR Code">
+        </div>
+    </div>
+</body>
+</html>

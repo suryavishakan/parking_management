@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Welcome</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-image: url('static/car_parking_image.jpg'); /* Add your background image URL here */
+            background-size: cover;
+            background-repeat: no-repeat;
+            background-attachment: fixed;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+        }
+        .header {
+            background-color: #333;
+            color: #fff;
+            text-align: center;
+            padding: 10px 0;
+            margin-bottom: 20px;
+        }
+        .sidebar {
+            width: 200px;
+            background-color: #f4f4f4;
+            float: left;
+            height: 100%;
+            position: fixed;
+            padding-top: 20px;
+        }
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+            border: 1px solid #ccc;
+            border-radius: 10px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            flex-direction: column;
+        }
+        h2 {
+            margin-top: 0;
+        }
+        .sidebar a {
+            display: block;
+            padding: 10px;
+            text-decoration: none;
+            color: #333;
+            margin-bottom: 5px;
+        }
+        .sidebar a:hover {
+            background-color: #ddd;
+        }
+        .welcome-text {
+            color: white;
+            font-size: 24px;
+            margin-bottom: 20px;
+        }
+        .button {
+            background-color: #007bff;
+            color: white;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            text-decoration: none;
+            transition: background-color 0.3s;
+        }
+        .button:hover {
+            background-color: #0056b3;
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1>Car Park Booking System</h1>
+    </div>
+    <div class="sidebar">
+        <a href="/slotsHomePage">Home</a>
+        <a href="/slots">Book a slot</a>
+        <a href="/profile">Profile</a>
+        <a href="/bookings">Bookings</a>
+        <a href="/vehicle_details">Vehicle Details</a>
+        <a href="/canceledBooking">Canceled Bookings</a>
+        <a href="/logout">Logout</a> <!-- Modified logout link -->
+    </div>
+    <div class="container">
+        <div class="welcome-text">
+            Welcome {{ username }}, let's start your booking!
+        </div>
+        <button class="button" onclick="redirectToHome()">Start Booking</button>
+    </div>
+
+    <script>
+        function redirectToHome() {
+            window.location.href = "/slots"; // Change "/slots" to the actual URL of your home page
+        }
+    </script>
+</body>
+</html>
