@@ -12,7 +12,7 @@ app=Flask(__name__ , template_folder='templates')
 app.secret_key = secrets.token_hex(32)
 
 try:
-    mongo = pymongo.MongoClient("mongodb+srv://<username>:<password>@<cluster-url>/ParkingManagementSystemDb?retryWrites=true&w=majority")
+    mongo = pymongo.MongoClient("mongodb+srv://<username>:<password>@cluster0.mongodb.net/ParkingManagementSystemDb?retryWrites=true&w=majority")
     db = mongo.ParkingManagementSystemDb #connect to mongodb1
     users_collection = db.admin
     user_collection = db["user"]
