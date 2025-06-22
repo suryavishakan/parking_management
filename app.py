@@ -9,27 +9,25 @@ from bson.json_util import dumps
 from functools import wraps
 import datetime
 from urllib.parse import quote_plus
-app=Flask(__name__ , template_folder='templates')
+app = Flask(__name__)
 app.secret_key = secrets.token_hex(32)
 
-username = quote_plus("surya")
-password = quote_plus("Surya@2002")
-cluster_host = "cluster0.mrmoilu.mongodb.net"  # ✅ Only the host
-db_name = "ParkingManagementSystemDb"
-
-mongo_uri = f"mongodb+srv://{username}:{password}@{cluster_host}/{db_name}?retryWrites=true&w=majority"
-
 try:
+    username = quote_plus("surya")
+    password = quote_plus("Surya@2002")
+    cluster_host = "cluster0.mrmoilu.mongodb.net"
+    db_name = "ParkingManagementSystemDb"
+
+    mongo_uri = (
+        f"mongodb+srv://{username}:{password}@{cluster_host}/{db_name}"
+        "?retryWrites=true&w=majority&tls=true"
+    )
+
     mongo = pymongo.MongoClient(mongo_uri, serverSelectionTimeoutMS=5000)
-    mongo.server_info()  # Trigger connection check
+    mongo.server_info()
 
     db = mongo[db_name]
-    users_collection = db.admin
-    user_collection = db["user"]
-    bookings_collection = db["booking"]
-    vehicle_collection = db["vehicle"]
-    canceled_bookings_collection = db.canceledBooking
-    location_collection = db.location
+    # ... your collections
 
 except Exception as e:
     app.logger.error(f"Error connecting to MongoDB: {e}")
