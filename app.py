@@ -12,8 +12,12 @@ app=Flask(__name__ , template_folder='templates')
 app.secret_key = secrets.token_hex(32)
 
 try:
-    mongo = pymongo.MongoClient("mongodb+srv://<username>:<password>@cluster0.mongodb.net/ParkingManagementSystemDb?retryWrites=true&w=majority")
-    db = mongo.ParkingManagementSystemDb #connect to mongodb1
+    mongo = pymongo.MongoClient(
+        "mongodb+srv://<surya>:<Surya@2002>@cluster0.mongodb.net/ParkingManagementSystemDb?retryWrites=true&w=majority",
+        serverSelectionTimeoutMS=5000
+    )
+    mongo.server_info()  # Triggers an exception if connection fails
+    db = mongo.ParkingManagementSystemDb
     users_collection = db.admin
     user_collection = db["user"]
     bookings_collection = db["booking"]
@@ -21,9 +25,10 @@ try:
     canceled_bookings_collection = db.canceledBooking
     location_collection = db.location
 
-    mongo.server_info() #trigger exception if cannot connect to db
-except:
-    print("Error connecting to MongoDB")
+except Exception as e:
+    app.logger.error(f"Error connecting to MongoDB: {e}")
+    db = None
+
     
 @app.route('/bookings')
 def bookings():
