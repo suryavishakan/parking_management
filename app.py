@@ -18,13 +18,21 @@ try:
     cluster_host = "cluster0.mrmoilu.mongodb.net"
     db_name = "ParkingManagementSystemDb"
 
-    mongo_uri = 'mongodb+srv://surya:<Surya@2002>@cluster0.mrmoilu.mongodb.net/'
+    mongo_uri = f"mongodb+srv://{username}:{password}@{cluster_host}/{db_name}?retryWrites=true&w=majority&tls=true"
+
 
     mongo = pymongo.MongoClient(mongo_uri, serverSelectionTimeoutMS=5000)
     mongo.server_info()
 
     db = mongo[db_name]
     # ... your collections
+    sers_collection = db["admin"]
+    user_collection = db["user"]
+    bookings_collection = db["booking"]
+    vehicle_collection = db["vehicle"]
+    canceled_bookings_collection = db["canceledBooking"]
+    location_collection = db["location"]
+
 
 except Exception as e:
     app.logger.error(f"Error connecting to MongoDB: {e}")
