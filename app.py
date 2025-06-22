@@ -10,7 +10,7 @@ from functools import wraps
 import datetime
 app=Flask(__name__ , template_folder='templates')
 app.secret_key = secrets.token_hex(32)
-#carparking-vindhya
+
 try:
     mongo = pymongo.MongoClient(
         host = 'localhost',
