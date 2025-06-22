@@ -8,14 +8,19 @@ from bson.objectid import ObjectId
 from bson.json_util import dumps
 from functools import wraps
 import datetime
+from urllib.parse import quote_plus
 app=Flask(__name__ , template_folder='templates')
 app.secret_key = secrets.token_hex(32)
 
 try:
-    mongo = pymongo.MongoClient(
-        "mongodb+srv://<surya>:<Surya@2002>@cluster0.mongodb.net/ParkingManagementSystemDb?retryWrites=true&w=majority",
-        serverSelectionTimeoutMS=5000
-    )
+    username = quote_plus("surya")
+    password = quote_plus("Surya@2002")
+    cluster = "cluster0.mongodb.net"
+    db_name = "ParkingManagementSystemDb"
+
+    mongo_uri = f"mongodb+srv://{username}:{password}@{cluster}/{db_name}?retryWrites=true&w=majority"
+
+    mongo = pymongo.MongoClient(mongo_uri, serverSelectionTimeoutMS=5000)
     mongo.server_info()  # Triggers an exception if connection fails
     db = mongo.ParkingManagementSystemDb
     users_collection = db.admin
