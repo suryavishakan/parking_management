@@ -13,13 +13,13 @@ app=Flask(__name__ , template_folder='templates')
 app.secret_key = secrets.token_hex(32)
 
 try:
-    username = quote_plus("surya")
+     username = quote_plus("surya")
     password = quote_plus("Surya@2002")
-    cluster = "cluster0.mongodb.net"
+    cluster_host = "cluster0.abcd123.mongodb.net"  # <- Replace this with your real host from Atlas
     db_name = "ParkingManagementSystemDb"
 
-    mongo_uri = f"mongodb+srv://{username}:{password}@{cluster}/{db_name}?retryWrites=true&w=majority"
-
+    mongo_uri = f"mongodb+srv://{username}:{password}@{cluster_host}/{db_name}?retryWrites=true&w=majority"
+    
     mongo = pymongo.MongoClient(mongo_uri, serverSelectionTimeoutMS=5000)
     mongo.server_info()  # Triggers an exception if connection fails
     db = mongo.ParkingManagementSystemDb
