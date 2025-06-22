@@ -21,12 +21,17 @@ try:
     mongo_uri = f"mongodb+srv://{username}:{password}@{cluster_host}/{db_name}?retryWrites=true&w=majority&tls=true"
 
 
-    mongo = pymongo.MongoClient(mongo_uri, serverSelectionTimeoutMS=5000)
+    mongo = pymongo.MongoClient(
+    mongo_uri,
+    serverSelectionTimeoutMS=5000,
+    tls=True,
+    tlsAllowInvalidCertificates=True)
+   
     mongo.server_info()
 
     db = mongo[db_name]
     # ... your collections
-    sers_collection = db["admin"]
+    users_collection = db["admin"]
     user_collection = db["user"]
     bookings_collection = db["booking"]
     vehicle_collection = db["vehicle"]
