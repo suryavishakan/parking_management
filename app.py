@@ -18,10 +18,7 @@ try:
     cluster_host = "cluster0.mrmoilu.mongodb.net"
     db_name = "ParkingManagementSystemDb"
 
-    mongo_uri = (
-        f"mongodb+srv://{username}:{password}@{cluster_host}/{db_name}"
-        "?retryWrites=true&w=majority&tls=true"
-    )
+    mongo_uri = 'mongodb+srv://surya:<Surya@2002>@cluster0.mrmoilu.mongodb.net/'
 
     mongo = pymongo.MongoClient(mongo_uri, serverSelectionTimeoutMS=5000)
     mongo.server_info()
