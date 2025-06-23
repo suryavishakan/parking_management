@@ -8,41 +8,26 @@ from bson.objectid import ObjectId
 from bson.json_util import dumps
 from functools import wraps
 import datetime
-from urllib.parse import quote_plus
-app = Flask(__name__)
+app=Flask(__name__ , template_folder='templates')
 app.secret_key = secrets.token_hex(32)
-
+#carparking-vindhya
 try:
-    username = quote_plus("surya")
-    password = quote_plus("Surya@2002")
-    cluster_host = "cluster0.mrmoilu.mongodb.net"
-    db_name = "ParkingManagementSystemDb"
-
-    mongo_uri = f"mongodb+srv://{username}:{password}@{cluster_host}/{db_name}?retryWrites=true&w=majority&tls=true"
-
-
     mongo = pymongo.MongoClient(
-    mongo_uri,
-    serverSelectionTimeoutMS=5000,
-    tls=True,
-    tlsAllowInvalidCertificates=True)
-   
-    mongo.server_info()
-
-    db = mongo[db_name]
-    # ... your collections
-    users_collection = db["admin"]
+        host = 'localhost',
+        port = 27017,
+        serverSelectionTimeoutMS = 1000
+    )
+    db = mongo.ParkingManagementSystemDb #connect to mongodb1
+    users_collection = db.admin
     user_collection = db["user"]
     bookings_collection = db["booking"]
     vehicle_collection = db["vehicle"]
-    canceled_bookings_collection = db["canceledBooking"]
-    location_collection = db["location"]
+    canceled_bookings_collection = db.canceledBooking
+    location_collection = db.location
 
-
-except Exception as e:
-    app.logger.error(f"Error connecting to MongoDB: {e}")
-    db = None
-
+    mongo.server_info() #trigger exception if cannot connect to db
+except:
+    print("Error connecting to MongoDB")
     
 @app.route('/bookings')
 def bookings():
